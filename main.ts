@@ -9,6 +9,11 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 const LINE =
   "The squirrels in my garden buried my car keys, and every spring they dig up three of them and leave one on the doormat, like rent.";
 
+// One output path, used by the write and the read-back alike, so the two
+// can never drift apart.
+const OUT_DIR = "/output";
+const OUT_FILE = `${OUT_DIR}/entry.txt`;
+
 // Runtime gate, mirroring the competition's own gate: the file must hold
 // 1-200 characters (counted in code points, so multi-byte text is safe),
 // and must not be whitespace-only. Fail loudly instead of shipping
@@ -18,11 +23,11 @@ if (chars < 1 || chars > 200 || LINE.trim().length === 0) {
   throw new Error(`entry must be 1-200 characters, got ${chars}`);
 }
 
-mkdirSync("/output", { recursive: true });
-writeFileSync("/output/entry.txt", LINE, "utf8");
+mkdirSync(OUT_DIR, { recursive: true });
+writeFileSync(OUT_FILE, LINE, "utf8");
 
 // Read-back check: the file on disk must hold exactly the line,
 // byte for byte, with no trailing newline added.
-if (readFileSync("/output/entry.txt", "utf8") !== LINE) {
+if (readFileSync(OUT_FILE, "utf8") !== LINE) {
   throw new Error("entry.txt does not match the line exactly");
 }
